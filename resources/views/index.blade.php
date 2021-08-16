@@ -16,9 +16,26 @@
               <button type="submit" class="btn btn-danger">削除</button>
             </form>
           @endif
+
+          @auth
+               @unless($post->bookmarkingUsers->contains(Auth::id()))
+               <form method="POST" action="{{ route('bookmarks.add', $post->id) }}">
+                    @csrf
+                    <button type="submit" class="btn btn-success">ブックマークする</button>
+               </form>
+               @else
+               <form method="POST" action="{{ route('bookmarks.remove', $post->id) }}">
+               @csrf
+               <button type="submit" class="btn btn-danger">ブックマークを解除する</button>
+               </form>
+
+               @endunless
+          @endauth
+          
+
         </div>
       </div>
-      <div class="container mt-4">
+
 
     
     @auth
@@ -34,9 +51,7 @@
             </form>
           </div>
         </div>
-      </div>
     @endauth
-  </div>
     @endforeach
   </div>
 @endsection

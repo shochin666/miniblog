@@ -13,7 +13,7 @@ class PostController extends Controller
 {
     public function index()
     {
-        $posts = Post::with(['user'])->orderBy('created_at', 'desc')->get();
+        $posts = Post::with(['user','bookmarkingUsers'])->orderBy('created_at', 'desc')->get();
     
         return view('index', ['posts' => $posts]);
     }
@@ -47,8 +47,9 @@ class PostController extends Controller
     public function show(Post $post)
     {
         $post->load('replies.user');
-
-        return view('posts.show', ['post' => $post]);
+        $bookmarked = $post->bookmarkingUsers->contains(Auth::id());
+    
+        return view('posts.show', ['post' => $post, 'bookmarked' => $bookmarked]);
     }
 
     public function reply(Request $request, Post $post)
@@ -62,5 +63,10 @@ class PostController extends Controller
         return redirect()->back();
     }
 
+    public function add(Post $post)
+    {
+        Auth::user()->bookmarkingPosts()->attach($post->id);
 
+        return redirect()->back();
+    }
 }
